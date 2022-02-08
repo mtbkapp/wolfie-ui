@@ -1,0 +1,12 @@
+;; shadow-cljs configuration
+{:source-paths ["src/dev"
+                "src/main"
+                "src/test"]
+
+ :dependencies [[reagent "1.1.0"]
+                [org.clojure/core.async "1.5.648"]]
+
+ :dev-http {8080 "public"}
+
+ :builds {:ui {:target :browser
+               :modules {:main {:init-fn wolfie.main/init}}}}}

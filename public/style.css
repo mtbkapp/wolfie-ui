@@ -1,0 +1,28 @@
+body {
+  background-color: #ffffff;
+}
+
+#pic {
+  border: 1px solid black;
+  padding: 10px;
+}
+
+#pic .row {
+  height: 20px;
+}
+
+#pic .pixel {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+}
+
+.drawing-canvas {
+  border: 1px solid black;
+  width: 240px;
+  height: 240px;
+}
+
+.selected-color {
+  border: 3px solid lime;
+}
