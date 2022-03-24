@@ -4,7 +4,8 @@
                 "src/test"]
 
  :dependencies [[reagent "1.1.0"]
-                [org.clojure/core.async "1.5.648"]]
+                [org.clojure/core.async "1.5.648"]
+                [clj-commons/secretary "1.2.4"]]
 
  :dev-http {8080 "public"}
 

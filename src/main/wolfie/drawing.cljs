@@ -2,6 +2,10 @@
   (:require [reagent.core :as r]))
 
 
+(def HEIGHT 240)
+(def WIDTH 240)
+
+
 (defn target-value
   [e]
   (-> e (.-target) (.-value)))
@@ -86,6 +90,13 @@
       (draw-line ctx palette x y nx ny)
       (swap! state assoc :drawing? false))))
 
+(defn prevent-default
+  [f]
+  (fn [e]
+    (.preventDefault e)
+    (f e)))
+
+; undo with canvas stack?
 (def canvas
   (let [state (atom {:drawing? false :x 0 :y 0 :palette nil})]
     (r/create-class
@@ -98,12 +109,16 @@
                canvas (js/document.createElement "canvas") 
                ctx (.getContext canvas "2d")]
            (.setAttribute canvas "class" "drawing-canvas")
-           (.setAttribute canvas "width" "240")
-           (.setAttribute canvas "height" "240")
+           (.setAttribute canvas "width" (str WIDTH))
+           (.setAttribute canvas "height" (str HEIGHT))
            (.addEventListener canvas "mousedown" #(start-drawing state ctx %))
            (.addEventListener canvas "mousemove" #(move-brush state ctx %))
            (.addEventListener canvas "mouseup" #(finish-drawing state ctx %))
            (.addEventListener canvas "mouseleave" #(finish-drawing state ctx %))
+           (.addEventListener canvas "touchstart" (prevent-default #(js/console.log "touchstart" %)))
+           (.addEventListener canvas "touchmove" (prevent-default #(js/console.log "touchmove" %)))
+           (.addEventListener canvas "touchend" (prevent-default #(js/console.log "touchend" %)))
+           (.addEventListener canvas "touchcancel" (prevent-default #(js/console.log "touchcancel" %)))
            (.appendChild div canvas)))
        :component-did-update
        (fn [this old-argv old-state snapshot]
