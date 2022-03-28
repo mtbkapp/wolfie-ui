@@ -15,13 +15,32 @@
 
 (secretary/set-config! :prefix "#")
 
+
+
+(defn btn-config
+  [btn-num]
+  [:div {:class (str "btn btn" btn-num)}
+   [:table
+    [:tr [:td [:span {:class "btn-title"} (str "Button " btn-num)]]]
+    [:tr [:td
+          [:table
+           [:tr 
+            [:td [:img {:class "btn-drawing"}]]
+            [:td [:div {:class "btn-list"}
+                  [:button {:type "button"} "Set Sound"]
+                  [:button {:type "button"} "Set Drawing"]
+                  [:button {:type "button"} "Activate"]]]]]]]]])
+
+
 (defn home
   []
-  [:div {:class "home-btn-grid"}
-   [:div {:class "btn btn1"} "Button 1"]
-   [:div {:class "btn btn2"} "Button 2"]
-   [:div {:class "btn btn3"} "Button 3"]
-   [:div {:class "btn btn4"} "Button 4"]])
+  [:table
+   [:tr
+    [:td [btn-config 1]]
+    [:td [btn-config 2]]]
+   [:tr
+    [:td [btn-config 3]]
+    [:td [btn-config 4]]]])
 
 
 (defroute recorder-route "/recorder" []
