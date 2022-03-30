@@ -4,8 +4,12 @@
             [secretary.core :as secretary :refer-macros [defroute]] 
             [reagent.core :as r] 
             [reagent.dom :as rdom] 
+            [wolfie.camera :as camera]
+            [wolfie.data :as data]
+            [wolfie.drawing :as drawing]
+            [wolfie.drawing-list :as drawing-list]
             [wolfie.recorder :as recorder]
-            [wolfie.drawing :as drawing])
+            [wolfie.utils :as utils])
   (:import [goog History]
            [goog.history EventType]))
 
@@ -17,48 +21,63 @@
 
 
 
+
 (defn btn-config
   [btn-num]
-  [:div {:class (str "btn btn" btn-num)}
-   [:table
+  [:table {:class "btn"}
+   [:tbody
     [:tr [:td [:span {:class "btn-title"} (str "Button " btn-num)]]]
     [:tr [:td
           [:table
-           [:tr 
-            [:td [:img {:class "btn-drawing"}]]
-            [:td [:div {:class "btn-list"}
-                  [:button {:type "button"} "Set Sound"]
-                  [:button {:type "button"} "Set Drawing"]
-                  [:button {:type "button"} "Activate"]]]]]]]]])
+           [:tbody
+            [:tr 
+             [:td [:img {:class "btn-drawing"}]]
+             [:td [:div {:class "btn-list"}
+                   [:button {:type "button"} "Set Sound"]
+                   [:button {:type "button"
+                             :on-click #(utils/goto! "buttons" btn-num "set-drawing")}
+                    "Set Drawing"]
+                   [:button {:type "button"} "Activate"]]]]]]]]]])
 
 
 (defn home
   []
-  [:table
-   [:tr
-    [:td [btn-config 1]]
-    [:td [btn-config 2]]]
-   [:tr
-    [:td [btn-config 3]]
-    [:td [btn-config 4]]]])
+  (data/get-button-config)
+  (fn []
+    [:table
+     [:tbody
+      [:tr
+       [:td [btn-config 1]]
+       [:td [btn-config 2]]]
+      [:tr
+       [:td [btn-config 3]]
+       [:td [btn-config 4]]]]]))
 
-
-(defroute recorder-route "/recorder" []
-  (reset! page :recorder))
-
-(defroute drawing-route "/drawing" []
-  (reset! page :drawing))
 
 (defroute home-route "/" []
-  (reset! page :home))
+  (reset! page [:home]))
+
+(defroute set-drawing "/buttons/:button-id/set-drawing"
+  [button-id]
+  (reset! page [:set-drawing {:btn-id button-id}]))
+
+(defroute set-drawing-camera "/buttons/:button-id/set-drawing/camera"
+  [button-id]
+  (reset! page [:set-drawing-camera {:btn-id button-id}]))
+
+(defroute set-drawing-new "/buttons/:button-id/set-drawing/new"
+  [button-id]
+  (reset! page [:set-drawing-new {:btn-id button-id}]))
 
 
 (defn root
   []
-  (case @page
-    :drawing [drawing/drawing]
-    :recorder [recorder/ui]
-    :home [home]))
+  (let [[page-name args] @page]
+    (case page-name
+      :home [home]
+      :set-drawing [drawing-list/select-drawing args]
+      :set-drawing-camera [camera/camera args]
+      :set-drawing-new [drawing/drawing args])))
 
 
 (defn start-routing!

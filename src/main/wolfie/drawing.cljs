@@ -1,9 +1,11 @@
 (ns wolfie.drawing
-  (:require [reagent.core :as r]))
+  (:require [reagent.core :as r]
+            [wolfie.utils :as utils]))
 
 
 (def HEIGHT 240)
 (def WIDTH 240)
+(def CANVAS-ID "new-drawing-canvas")
 
 
 (defn target-value
@@ -96,6 +98,15 @@
     (.preventDefault e)
     (f e)))
 
+(defn set-drawing!
+  [btn-id]
+  (let [canvas (js/document.getElementById CANVAS-ID)
+        drawing (.toDataURL canvas "image/png")]
+    ; post drawing to server, get new drawing id 
+    ; config the button
+    ; go back to home
+    ))
+
 ; undo with canvas stack?
 (def canvas
   (let [state (atom {:drawing? false :x 0 :y 0 :palette nil})]
@@ -111,6 +122,7 @@
            (.setAttribute canvas "class" "drawing-canvas")
            (.setAttribute canvas "width" (str WIDTH))
            (.setAttribute canvas "height" (str HEIGHT))
+           (.setAttribute canvas "id" CANVAS-ID)
            (.addEventListener canvas "mousedown" #(start-drawing state ctx %))
            (.addEventListener canvas "mousemove" #(move-brush state ctx %))
            (.addEventListener canvas "mouseup" #(finish-drawing state ctx %))
@@ -129,7 +141,7 @@
 
 
 (defn drawing
-  [props]
+  [{:keys [btn-id]}]
   (let [state (r/atom {:line-width 8
                        :colors ["#000000" "#ff0000" "#00ff00"]
                        :selected-color 0})]
@@ -138,5 +150,8 @@
        [palette (assoc @state
                        :on-change (fn [ks v]
                                     (swap! state assoc-in ks v)))]
-       [canvas @state]])))
+       [canvas @state]
+       [:div
+        [:button {:type "button" :on-click #(utils/goto!)} "Cancel"]
+        [:button {:type "button" :on-click #(set-drawing! btn-id)} "Set"]]])))
 
